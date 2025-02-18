@@ -3,19 +3,18 @@ name: Docker Build
 on:
   push:
     tags:
-      - '8.2-alpine'
-      - '8.3-alpine'
-      - '8.4-alpine'
+      - '*'
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: ['8.2-alpine', '8.3-alpine', '8.4-alpine']
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Extract PHP Version from Tag
-        run: echo "PHP_VERSION=${GITHUB_REF#refs/tags/php-}" >> $GITHUB_ENV
 
       - name: Set up QEMU (Emulation for ARM & Other Architectures)
         uses: docker/setup-qemu-action@v3
@@ -31,11 +30,11 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and PushDocker Image
+      - name: Build and Push Docker Image
         run: |
           docker buildx create --use
           docker buildx build \
             --platform linux/amd64,linux/arm32v5,linux/arm32v6,linux/arm32v7,linux/arm64,linux/i386,linux/mips64le,linux/ppc64le,linux/riscv64,linux/s390x \
-            --build-arg PHP_VERSION=${{ env.PHP_VERSION }} \
-            -t myrepo/laravel-app:${{ env.PHP_VERSION }} \
+            --build-arg PHP_VERSION=${{ matrix.php-version }} \
+            -t myrepo/laravel-app:${{ matrix.php-version }} \
             --push .
