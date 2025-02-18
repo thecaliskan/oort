@@ -5,7 +5,7 @@ FROM php:${PHP_VERSION}
 LABEL org.opencontainers.image.authors="Emre Çalışkan oort@thecaliskan.com"
 
 # Install build dependencies
-RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev postgresql-libs
+RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev postgresql-libs brotli-dev
 
 # Install PECL and PEAR extensions
 RUN pecl install igbinary redis swoole
