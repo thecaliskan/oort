@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-version: ['8.2-alpine', '8.3-alpine', '8.4-alpine']
+        php-version: ['8.2', '8.3', '8.4']
 
     steps:
       - name: Checkout repository
@@ -37,6 +37,6 @@ jobs:
           docker buildx create --use
           docker buildx build \
             --platform linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/i386,linux/ppc64le,linux/riscv64,linux/s390x \
-            --build-arg PHP_VERSION=${{ matrix.php-version }} \
-            -t myrepo/laravel-app:${{ matrix.php-version }} \
+            --build-arg PHP_VERSION=${{ matrix.php-version }}-alpine \
+            -t thecaliskan/oort:${{ matrix.php-version }} \
             --push .
