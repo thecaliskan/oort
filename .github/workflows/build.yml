@@ -21,7 +21,7 @@ jobs:
       - name: Set up QEMU (Emulation for ARM & Other Architectures)
         uses: docker/setup-qemu-action@v3
         with:
-          platforms: linux/amd64,linux/arm32v5,linux/arm32v6,linux/arm32v7,linux/arm64,linux/i386,linux/mips64le,linux/ppc64le,linux/riscv64,linux/s390x
+          platforms: linux/amd64,linux/arm32v6,linux/arm32v7,linux/arm64,linux/i386,linux/ppc64le,linux/riscv64,linux/s390x
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -36,7 +36,7 @@ jobs:
         run: |
           docker buildx create --use
           docker buildx build \
-            --platform linux/amd64,linux/arm32v5,linux/arm32v6,linux/arm32v7,linux/arm64,linux/i386,linux/mips64le,linux/ppc64le,linux/riscv64,linux/s390x \
+            --platform linux/amd64,linux/arm32v6,linux/arm32v7,linux/arm64,linux/i386,linux/ppc64le,linux/riscv64,linux/s390x \
             --build-arg PHP_VERSION=${{ matrix.php-version }} \
             -t myrepo/laravel-app:${{ matrix.php-version }} \
             --push .
