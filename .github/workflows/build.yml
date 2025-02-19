@@ -44,6 +44,6 @@ jobs:
           
           docker buildx build \
             --platform linux/amd64,linux/arm64,linux/ppc64le,linux/riscv64,linux/s390x \
-            --build-arg OORT_VERSION=${{ matrix.oort-version }}-alpine \
+            --build-arg OORT_VERSION=${{ matrix.oort-version }} \
             $TAGS \
             --push .
