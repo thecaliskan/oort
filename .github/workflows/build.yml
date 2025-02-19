@@ -22,7 +22,7 @@ jobs:
       - name: Set up QEMU (Emulation for ARM & Other Architectures)
         uses: docker/setup-qemu-action@v3
         with:
-          platforms: linux/amd64,linux/arm64,linux/ppc64le,linux/riscv64,linux/s390x
+          platforms: linux/amd64,linux/arm64
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -43,7 +43,7 @@ jobs:
           fi
           
           docker buildx build \
-            --platform linux/amd64,linux/arm64,linux/ppc64le,linux/riscv64,linux/s390x \
+            --platform linux/amd64,linux/arm64 \
             --build-arg OORT_VERSION=${{ matrix.oort-version }} \
             $TAGS \
             --push .
