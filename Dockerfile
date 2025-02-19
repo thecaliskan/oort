@@ -5,12 +5,14 @@ FROM php:${OORT_VERSION}-alpine
 LABEL org.opencontainers.image.authors="Emre Çalışkan oort@thecaliskan.com"
 
 # Install PHP extensions
-RUN set -x; \
-    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev postgresql-libs brotli-dev; \
+RUN set -eux; \
+    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev brotli-dev; \
+    apk add --no-cache libstdc++ postgresql-libs; \
     pecl install igbinary redis swoole; \
     docker-php-ext-enable igbinary redis swoole; \
     docker-php-ext-install pcntl pdo_mysql pdo_pgsql; \
-    apk del --no-network .build-deps
+    apk del --no-network .build-deps; \
+    rm -rf /tmp/pear /usr/local/lib/php/test /usr/local/lib/php/doc /usr/local/lib/php/.registry;
 
 # Install composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -40,5 +42,6 @@ EXPOSE 80
 STOPSIGNAL SIGTERM
 
 # Add Environment
+ENV OORT_VERSION=${OORT_VERSION:-8.4}
 ENV APP_ENV=production
 
