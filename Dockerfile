@@ -1,4 +1,4 @@
-ARG PHP_VERSION=8.4-alpine
+ARG PHP_VERSION
 FROM php:${PHP_VERSION}
 
 # Set Label
