@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-version: ['8.2', '8.3', '8.4']
+        oort-version: ['8.2', '8.1', '8.3', '8.4']
 
     steps:
       - name: Checkout repository
@@ -36,8 +36,14 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           docker buildx create --use
+          TAGS="-t thecaliskan/oort:${{ matrix.oort-version }}"
+          
+          if [ "${{ matrix.oort-version }}" == "8.4" ]; then
+            TAGS="$TAGS -t thecaliskan/oort:latest"
+          fi
+          
           docker buildx build \
             --platform linux/amd64,linux/arm64,linux/ppc64le,linux/riscv64,linux/s390x \
-            --build-arg PHP_VERSION=${{ matrix.php-version }}-alpine \
-            -t thecaliskan/oort:${{ matrix.php-version }} \
+            --build-arg OORT_VERSION=${{ matrix.oort-version }}-alpine \
+            $TAGS \
             --push .

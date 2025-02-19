@@ -1,23 +1,16 @@
-ARG PHP_VERSION
-FROM php:${PHP_VERSION}
+ARG OORT_VERSION
+FROM php:${OORT_VERSION}
 
 # Set Label
 LABEL org.opencontainers.image.authors="Emre Çalışkan oort@thecaliskan.com"
 
-# Install build dependencies
-RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev postgresql-libs brotli-dev
-
-# Install PECL and PEAR extensions
-RUN pecl install igbinary redis swoole
-
-# Enable PECL and PEAR extensions
-RUN docker-php-ext-enable igbinary redis swoole
-
 # Install PHP extensions
-RUN docker-php-ext-install pcntl pdo_mysql pdo_pgsql
-
-# Cleanup dev dependencies
-RUN apk del -f .build-deps
+RUN set -eux; \
+    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev postgresql-libs brotli-dev && \
+    pecl install igbinary redis swoole && \
+    docker-php-ext-enable igbinary redis swoole && \
+    docker-php-ext-install pcntl pdo_mysql pdo_pgsql && \
+    apk del --no-network .build-deps
 
 # Install composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
