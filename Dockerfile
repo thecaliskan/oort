@@ -5,11 +5,7 @@ FROM php:${OORT_VERSION}-alpine
 LABEL org.opencontainers.image.authors="Emre Çalışkan oort@thecaliskan.com"
 
 # Install PHP extensions
-RUN set -eux; \
-    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev postgresql-libs brotli-dev
-
-# Install PHP extensions
-RUN set -eux; \
+RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev postgresql-libs brotli-dev; \
     pecl install igbinary redis swoole; \
     docker-php-ext-enable igbinary redis swoole; \
     docker-php-ext-install pcntl pdo_mysql pdo_pgsql; \
