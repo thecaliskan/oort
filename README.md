@@ -4,6 +4,8 @@
 
 This repository provides a lightweight and optimized Docker base image for running Laravel Octane, Laravel Horizon, Laravel Scheduler, and Symfony Runner, Symfony Messenger, and Symfony Scheduler applications.
 
+[![Docker Hub Badge](https://img.shields.io/docker/pulls/thecaliskan/oort)](https://hub.docker.com/r/thecaliskan/oort)
+
 ### Features
 
 - Minimal and optimized image for performance
