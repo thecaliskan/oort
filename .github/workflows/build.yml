@@ -63,7 +63,7 @@ jobs:
         uses: docker/scout-action@v1
         with:
           command: cves
-          image: ${{ steps.meta.outputs.tags }}
+          image: thecaliskan/oort:${{ matrix.oort-version }}
           sarif-file: sarif.output.json
           summary: true
 
