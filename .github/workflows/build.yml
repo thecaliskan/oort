@@ -34,20 +34,17 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build and Push Docker Image
-        run: |
-          docker buildx create --use
-          TAGS="-t thecaliskan/oort:${{ matrix.oort-version }}"
-          
-          if [ "${{ matrix.oort-version }}" == "8.4" ]; then
-            TAGS="$TAGS -t thecaliskan/oort:latest"
-          fi
-          
-          docker buildx build \
-            --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x \
-            --sbom=true \
-            --provenance=mode=max \
-            --build-arg OORT_VERSION=${{ matrix.oort-version }} \
-            --cache-from=type=registry,ref=thecaliskan/oort:build-cache \
-            --cache-to=type=registry,ref=thecaliskan/oort:build-cache,mode=max \
-            $TAGS \
-            --push .
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          provenance: mode=max
+          sbom: true
+          platforms: linux/amd64,linux/arm64,linux/ppc64le,linux/s390x
+          build-args: |
+            OORT_VERSION=${{ matrix.oort-version }}
+          tags: |
+            thecaliskan/oort:${{ matrix.oort-version }}
+            ${{ matrix.oort-version == '8.4' && 'thecaliskan/oort:latest' || '' }}
+          cache-from: type=gha,scope=oort-${{ matrix.oort-version }}
+          cache-to: type=gha,mode=max,scope=oort-${{ matrix.oort-version }}
