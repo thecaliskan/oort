@@ -5,7 +5,12 @@
 This repository provides a lightweight and optimized Docker base image for running Laravel Octane, Laravel Horizon, Laravel Reverb, Laravel Pulse, Laravel Scheduler, and Symfony Runner, Symfony Messenger, and Symfony Scheduler applications.
 
 [![Docker Image CI](https://img.shields.io/github/actions/workflow/status/thecaliskan/oort/build.yml?branch=master)](https://github.com/thecaliskan/oort/actions)
-[![Docker Hub Badge](https://img.shields.io/docker/pulls/thecaliskan/oort)](https://hub.docker.com/r/thecaliskan/oort)
+[![Docker Image Size](https://img.shields.io/docker/image-size/thecaliskan/oort/latest)](https://hub.docker.com/r/thecaliskan/oort)
+[![Docker Pulls](https://img.shields.io/docker/pulls/thecaliskan/oort)](https://hub.docker.com/r/thecaliskan/oort)
+[![Docker Stars](https://img.shields.io/docker/stars/thecaliskan/oort)](https://hub.docker.com/r/thecaliskan/oort)
+[![Docker Version](https://img.shields.io/docker/v/thecaliskan/oort/latest)](https://hub.docker.com/r/thecaliskan/oort)
+[![License](https://img.shields.io/github/license/thecaliskan/oort)](https://github.com/thecaliskan/oort/blob/master/LICENSE)
+[![Platforms](https://img.shields.io/badge/platforms-linux%2Famd64%20%7C%20linux%2Farm64%20%7C%20linux%2Fppc64le%20%7C%20linux%2Fs390x%20%7C%20macos%2Famd64%20%7C%20macos%2Farm64-blue)](https://hub.docker.com/r/thecaliskan/oort)
 
 ### Features
 
