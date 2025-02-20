@@ -45,7 +45,9 @@ jobs:
           docker buildx build \
             --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x \
             --sbom=true \
-            --attest=provenance=max \
+            --provenance=mode=max \
             --build-arg OORT_VERSION=${{ matrix.oort-version }} \
+            --cache-from=type=registry,ref=thecaliskan/oort:build-cache \
+            --cache-to=type=registry,ref=thecaliskan/oort:build-cache,mode=max \
             $TAGS \
             --push .
