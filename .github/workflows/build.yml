@@ -67,9 +67,9 @@ jobs:
           build-args: |
             OORT_VERSION=${{ matrix.oort-version }}
           tags: |
-            thecaliskan/oort:${{ matrix.oort-version }}
+#            thecaliskan/oort:${{ matrix.oort-version }}
             ghcr.io/thecaliskan/oort:${{ matrix.oort-version }}
-            ${{ matrix.oort-version == '8.4' && 'thecaliskan/oort:latest' || '' }}
+#            ${{ matrix.oort-version == '8.4' && 'thecaliskan/oort:latest' || '' }}
             ${{ matrix.oort-version == '8.4' && 'ghcr.io/thecaliskan/oort:latest' || '' }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=oort-${{ matrix.oort-version }}
