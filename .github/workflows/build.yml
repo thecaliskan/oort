@@ -44,7 +44,7 @@ jobs:
           
           docker buildx build \
             --platform linux/amd64,linux/arm64,linux/ppc64le,linux/s390x \
-            --attest type=sbom \
+            --sbom=true \
             --attest=provenance=max \
             --build-arg OORT_VERSION=${{ matrix.oort-version }} \
             $TAGS \
