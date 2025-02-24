@@ -1,9 +1,9 @@
 name: Docker Build
 
 on:
-  push:
-    branches:
-      - 'master'
+#  push:
+#    branches:
+#      - 'master'
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
@@ -72,8 +72,8 @@ jobs:
             ${{ matrix.oort-version == '8.4' && 'thecaliskan/oort:latest' || '' }}
             ${{ matrix.oort-version == '8.4' && 'ghcr.io/thecaliskan/oort:latest' || '' }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=oort-${{ matrix.oort-version }}
-          cache-to: type=gha,mode=max,scope=oort-${{ matrix.oort-version }}
+#          cache-from: type=gha,scope=oort-${{ matrix.oort-version }}
+#          cache-to: type=gha,mode=max,scope=oort-${{ matrix.oort-version }}
 
       - name: Analyze for critical and high CVEs
         uses: docker/scout-action@v1
