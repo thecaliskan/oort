@@ -119,7 +119,7 @@ jobs:
           name: sarif-${{ matrix.oort-version }}
           path: sarif.output.json
 
-  docs-webhook:
+  docs:
     runs-on: ubuntu-latest
     needs: build
     steps:
