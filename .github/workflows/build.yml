@@ -118,3 +118,11 @@ jobs:
         with:
           name: sarif-${{ matrix.oort-version }}
           path: sarif.output.json
+
+  docs-webhook:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Trigger docs workflow
+        run: |
+          gh workflow run pages.yml --repo thecaliskan/oort-docs --ref master
