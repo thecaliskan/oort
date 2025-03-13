@@ -101,7 +101,7 @@ jobs:
           path: ./output/**/sbom.spdx.json
 
       - name: Save Build Summary
-        run: echo "$GITHUB_STEP_SUMMARY" > build-summary.md
+        run: echo $GITHUB_STEP_SUMMARY > build-summary.md
 
       - name: Upload Build Summary as Artifact
         uses: actions/upload-artifact@v4
