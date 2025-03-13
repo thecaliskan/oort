@@ -6,6 +6,8 @@ LABEL org.opencontainers.image.authors="Emre Çalışkan oort@thecaliskan.com"
 
 # Install PHP extensions
 RUN set -eux; \
+    apk update --no-cache; \
+    apk upgrade --no-cache; \
     apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev brotli-dev icu-dev libzip-dev; \
     apk add --no-cache libstdc++ postgresql-libs icu-libs libzip;  \
     pecl install igbinary redis swoole; \
