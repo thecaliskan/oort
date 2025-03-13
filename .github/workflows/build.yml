@@ -16,3 +16,5 @@ jobs:
     steps:
       - name: Trigger docs workflow
         run: gh workflow run pages.yml --repo thecaliskan/oort-docs --ref master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
