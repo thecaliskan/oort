@@ -129,12 +129,11 @@ jobs:
       - name: Write to step summary
         run: |
           echo "Step 1 summary" >> $GITHUB_STEP_SUMMARY
-          echo "More info for step 1" >> summary.txt
 
       - name: Write to another step summary
         run: |
           echo "Step 2 summary" >> $GITHUB_STEP_SUMMARY
-          echo "More info for step 2" >> summary.txt
+          echo $GITHUB_STEP_SUMMARY >> summary.txt
 
       - name: Upload summary as artifact
         uses: actions/upload-artifact@v4
