@@ -90,6 +90,7 @@ jobs:
             ${{ matrix.oort-version == '8.4' && 'registry.gitlab.com/thecaliskan/oort:latest' || '' }}
             ${{ matrix.oort-version == '8.4' && 'quay.io/thecaliskan/oort:latest' || '' }}
           labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=local,dest=./output
 #          cache-from: type=gha,scope=oort-${{ matrix.oort-version }}
 #          cache-to: type=gha,mode=max,scope=oort-${{ matrix.oort-version }}
 
@@ -101,7 +102,27 @@ jobs:
           sarif-file: sarif.output.json
           summary: true
 
+      - name: Upload SBOM as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-${{ matrix.oort-version }}
+          path: ./output/**/sbom.spdx.json
+
       - name: Upload SARIF result
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: sarif.output.json
+
+      - name: Upload SARIF as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sarif-${{ matrix.oort-version }}
+          path: sarif.output.json
+
+  docs-webhook:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger docs workflow
+        run: gh workflow run pages.yml --repo thecaliskan/oort-docs --ref master
+        env:
+          GITHUB_TOKEN: ${{ secrets.OORT_GITHUB_TOKEN }}
