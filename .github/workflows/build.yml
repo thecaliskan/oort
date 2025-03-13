@@ -98,7 +98,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sbom-${{ matrix.oort-version }}
-          path: ./output/
+          path: ./output/**/sbom.spdx.json
 
 #      - name: Analyze for critical and high CVEs
 #        uses: docker/scout-action@v1
