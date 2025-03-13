@@ -11,10 +11,8 @@ on:
 jobs:
   docs-webhook:
     runs-on: ubuntu-latest
-    permissions:
-      actions: write
     steps:
       - name: Trigger docs workflow
         run: gh workflow run pages.yml --repo thecaliskan/oort-docs --ref master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.OORT_GITHUB_TOKEN }}
