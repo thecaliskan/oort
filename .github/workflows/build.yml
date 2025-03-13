@@ -97,8 +97,8 @@ jobs:
       - name: Upload SBOM as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: sbom-${{ matrix.oort-version }}.json
-          path: ./output/sbom.json
+          name: sbom-${{ matrix.oort-version }}
+          path: ./output/
 
 #      - name: Analyze for critical and high CVEs
 #        uses: docker/scout-action@v1
