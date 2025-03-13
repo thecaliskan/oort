@@ -1,9 +1,9 @@
 name: Docker Build
 
 on:
-#  push:
-#    branches:
-#      - 'master'
+  push:
+    branches:
+      - 'docker'
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
@@ -90,18 +90,25 @@ jobs:
             ${{ matrix.oort-version == '8.4' && 'registry.gitlab.com/thecaliskan/oort:latest' || '' }}
             ${{ matrix.oort-version == '8.4' && 'quay.io/thecaliskan/oort:latest' || '' }}
           labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=local,dest=./output
 #          cache-from: type=gha,scope=oort-${{ matrix.oort-version }}
 #          cache-to: type=gha,mode=max,scope=oort-${{ matrix.oort-version }}
 
-      - name: Analyze for critical and high CVEs
-        uses: docker/scout-action@v1
+      - name: Upload SBOM as Artifact
+        uses: actions/upload-artifact@v4
         with:
-          command: cves
-          image: thecaliskan/oort:${{ matrix.oort-version }}
-          sarif-file: sarif.output.json
-          summary: true
+          name: sbom-${{ matrix.oort-version }}.json
+          path: ./output/sbom.json
 
-      - name: Upload SARIF result
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: sarif.output.json
+#      - name: Analyze for critical and high CVEs
+#        uses: docker/scout-action@v1
+#        with:
+#          command: cves
+#          image: thecaliskan/oort:${{ matrix.oort-version }}
+#          sarif-file: sarif.output.json
+#          summary: true
+#
+#      - name: Upload SARIF result
+#        uses: github/codeql-action/upload-sarif@v3
+#        with:
+#          sarif_file: sarif.output.json
