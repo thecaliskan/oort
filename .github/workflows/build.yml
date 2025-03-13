@@ -100,6 +100,15 @@ jobs:
           name: sbom-${{ matrix.oort-version }}
           path: ./output/**/sbom.spdx.json
 
+      - name: Save Build Summary
+        run: cp $GITHUB_STEP_SUMMARY build-summary.md
+
+      - name: Upload Build Summary as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-summary-${{ matrix.oort-version }}
+          path: build-summary.md
+
 #      - name: Analyze for critical and high CVEs
 #        uses: docker/scout-action@v1
 #        with:
