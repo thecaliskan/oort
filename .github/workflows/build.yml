@@ -101,7 +101,7 @@ jobs:
           path: ./output/**/sbom.spdx.json
 
       - name: Save Build Summary
-        run: cp $GITHUB_STEP_SUMMARY build-summary.md
+        run: echo "$GITHUB_STEP_SUMMARY" > build-summary.md
 
       - name: Upload Build Summary as Artifact
         uses: actions/upload-artifact@v4
@@ -109,15 +109,15 @@ jobs:
           name: build-summary-${{ matrix.oort-version }}
           path: build-summary.md
 
-#      - name: Analyze for critical and high CVEs
-#        uses: docker/scout-action@v1
-#        with:
-#          command: cves
-#          image: thecaliskan/oort:${{ matrix.oort-version }}
-#          sarif-file: sarif.output.json
-#          summary: true
-#
-#      - name: Upload SARIF result
-#        uses: github/codeql-action/upload-sarif@v3
-#        with:
-#          sarif_file: sarif.output.json
+      - name: Analyze for critical and high CVEs
+        uses: docker/scout-action@v1
+        with:
+          command: cves
+          image: thecaliskan/oort:${{ matrix.oort-version }}
+          sarif-file: sarif.output.json
+          summary: true
+
+      - name: Upload SARIF result
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: sarif.output.json
