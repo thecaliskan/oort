@@ -65,25 +65,10 @@ jobs:
       - name: Upload PHP Extensions as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: php-extensions
-          path: ./php-extensions-**.json
+          name: php-extensions-${{ matrix.oort-version }}
+          path: php-extensions-${{ matrix.oort-version }}.json
 
-      - name: Upload SBOM as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: sbom-${{ matrix.oort-version }}
-          path: ./output/**/sbom.spdx.json
 
-      - name: Upload SARIF result
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: sarif.output.json
-
-      - name: Upload SARIF as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: sarif-${{ matrix.oort-version }}
-          path: sarif.output.json
 
   docs:
     runs-on: ubuntu-latest
