@@ -56,6 +56,52 @@ jobs:
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_TOKEN }}
 
+      - name: Generate Docker Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: thecaliskan/oort
+          tags: |
+            type=raw,value=${{ matrix.oort-version }}
+            type=raw,value=latest,enable=${{ matrix.oort-version == '8.4' }}
+          labels: |
+            org.opencontainers.image.authors=Emre Çalışkan oort@thecaliskan.com
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          file: ./Dockerfile
+          push: true
+          provenance: mode=max
+          sbom: true
+          platforms: linux/amd64,linux/arm64,linux/ppc64le,linux/s390x
+          build-args: |
+            OORT_VERSION=${{ matrix.oort-version }}
+          tags: |
+            thecaliskan/oort:${{ matrix.oort-version }}
+            ghcr.io/thecaliskan/oort:${{ matrix.oort-version }}
+            registry.gitlab.com/thecaliskan/oort:${{ matrix.oort-version }}
+            quay.io/thecaliskan/oort:${{ matrix.oort-version }}
+            ${{ matrix.oort-version == '8.4' && 'thecaliskan/oort:latest' || '' }}
+            ${{ matrix.oort-version == '8.4' && 'ghcr.io/thecaliskan/oort:latest' || '' }}
+            ${{ matrix.oort-version == '8.4' && 'registry.gitlab.com/thecaliskan/oort:latest' || '' }}
+            ${{ matrix.oort-version == '8.4' && 'quay.io/thecaliskan/oort:latest' || '' }}
+          labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=local,dest=./output
+#          cache-from: type=gha,scope=oort-${{ matrix.oort-version }}
+#          cache-to: type=gha,mode=max,scope=oort-${{ matrix.oort-version }}
+
+      - name: Analyze for critical and high CVEs
+        uses: docker/scout-action@v1
+        with:
+          command: cves
+          image: thecaliskan/oort:${{ matrix.oort-version }}
+          sarif-file: sarif.output.json
+          summary: true
+
       - name: Run Docker Container and Extract PHP Extensions
         run: |
           docker run --rm thecaliskan/oort:${{ matrix.oort-version }} \
@@ -68,7 +114,22 @@ jobs:
           name: php-extensions-${{ matrix.oort-version }}
           path: php-extensions-${{ matrix.oort-version }}.json
 
+      - name: Upload SBOM as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-${{ matrix.oort-version }}
+          path: ./output/**/sbom.spdx.json
 
+      - name: Upload SARIF result
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: sarif.output.json
+
+      - name: Upload SARIF as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sarif-${{ matrix.oort-version }}
+          path: sarif.output.json
 
   docs:
     runs-on: ubuntu-latest

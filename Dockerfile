@@ -5,16 +5,16 @@ FROM php:${OORT_VERSION}-alpine
 LABEL org.opencontainers.image.authors="Emre Çalışkan oort@thecaliskan.com"
 
 # Install PHP extensions
-#RUN set -eux; \
-#    apk update --no-cache; \
-#    apk upgrade --no-cache; \
-#    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev brotli-dev icu-dev libzip-dev; \
-#    apk add --no-cache libstdc++ postgresql-libs icu-libs libzip;  \
-#    pecl install igbinary redis swoole; \
-#    docker-php-ext-enable igbinary redis swoole; \
-#    docker-php-ext-install bcmath intl pcntl pdo_mysql pdo_pgsql zip; \
-#    apk del --no-network .build-deps; \
-#    rm -rf /tmp/pear /usr/local/lib/php/test /usr/local/lib/php/doc /usr/local/lib/php/.registry;
+RUN set -eux; \
+    apk update --no-cache; \
+    apk upgrade --no-cache; \
+    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev brotli-dev icu-dev libzip-dev; \
+    apk add --no-cache libstdc++ postgresql-libs icu-libs libzip;  \
+    pecl install igbinary redis swoole; \
+    docker-php-ext-enable igbinary redis swoole; \
+    docker-php-ext-install bcmath intl pcntl pdo_mysql pdo_pgsql zip; \
+    apk del --no-network .build-deps; \
+    rm -rf /tmp/pear /usr/local/lib/php/test /usr/local/lib/php/doc /usr/local/lib/php/.registry;
 
 # Install composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
