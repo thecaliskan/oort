@@ -1,4 +1,4 @@
-# Oort
+# OORT
 
 ## Lightweight Docker Base Image for PHP Applications
 

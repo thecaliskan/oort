@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-The following versions of Oort are currently supported for security updates:
+The following versions of OORT are currently supported for security updates:
 
 | Version | Supported          | Security Support Until |
 | ------- | ------------------ | ---------------------- |
@@ -14,7 +14,7 @@ The following versions of Oort are currently supported for security updates:
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in Oort, please **do not** create a public issue. Instead, report it privately via email.
+If you discover a security vulnerability in OORT, please **do not** create a public issue. Instead, report it privately via email.
 
 🔒 **Security Contact:** [security@thecaliskan.com](mailto:security@thecaliskan.com)
 
@@ -33,4 +33,4 @@ We will review your report and respond within **48 hours**. If the issue is conf
 - Please allow us time to patch before publicly disclosing any vulnerabilities.
 - If you believe a security issue poses an **immediate critical risk**, please include `[URGENT]` in your email subject.
 
-Thanks for helping us keep **Oort** secure! 🚀
+Thanks for helping us keep **OORT** secure! 🚀
