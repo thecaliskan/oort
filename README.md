@@ -32,4 +32,4 @@ This repository provides a lightweight and optimized Docker base image for runni
 
 ## License
 
-This project is open-source and available under the [MIT license](LICENSE).
+This project is open-source and available under the [MIT license](https://github.com/thecaliskan/oort/blob/master/LICENSE).
