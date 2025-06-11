@@ -1,5 +1,6 @@
 ARG OORT_VERSION=8.4
-FROM php:${OORT_VERSION}-alpine
+ARG ALPINE_VERSION=3.22
+FROM php:${OORT_VERSION}-alpine${ALPINE_VERSION}
 
 # Set Label
 LABEL org.opencontainers.image.authors="Emre Çalışkan oort@thecaliskan.com"

@@ -80,6 +80,7 @@ jobs:
           platforms: linux/amd64,linux/arm64,linux/ppc64le,linux/s390x
           build-args: |
             OORT_VERSION=${{ matrix.oort-version }}
+            ALPINE_VERSION=${{ matrix.oort-version == '8.1' && '3.21' || '3.22' }}
           tags: |
             thecaliskan/oort:${{ matrix.oort-version }}
             ghcr.io/thecaliskan/oort:${{ matrix.oort-version }}
