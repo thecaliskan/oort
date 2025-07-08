@@ -29,7 +29,9 @@ jobs:
             alpine-version: 3.22
           - oort-version: 8.5-rc
             alpine-version: 3.22
-    continue-on-error: ${{ matrix.php-version == '8.5-rc' }}
+
+    continue-on-error: ${{ matrix.oort-version == '8.5-rc' }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
