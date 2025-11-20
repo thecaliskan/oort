@@ -27,10 +27,10 @@ jobs:
             alpine-version: 3.22
           - oort-version: 8.4
             alpine-version: 3.22
-          - oort-version: 8.5-rc
+          - oort-version: 8.5
             alpine-version: 3.22
 
-    continue-on-error: ${{ matrix.oort-version == '8.5-rc' }}
+    continue-on-error: ${{ matrix.oort-version == '8.5' }}
 
     steps:
       - name: Checkout repository
@@ -75,7 +75,7 @@ jobs:
           images: thecaliskan/oort
           tags: |
             type=raw,value=${{ matrix.oort-version }}
-            type=raw,value=latest,enable=${{ matrix.oort-version == '8.4' }}
+            type=raw,value=latest,enable=${{ matrix.oort-version == '8.5' }}
           labels: |
             org.opencontainers.image.authors=Emre Çalışkan oort@thecaliskan.com
 
@@ -98,10 +98,10 @@ jobs:
             ghcr.io/thecaliskan/oort:${{ matrix.oort-version }}
             registry.gitlab.com/thecaliskan/oort:${{ matrix.oort-version }}
             quay.io/thecaliskan/oort:${{ matrix.oort-version }}
-            ${{ matrix.oort-version == '8.4' && 'thecaliskan/oort:latest' || '' }}
-            ${{ matrix.oort-version == '8.4' && 'ghcr.io/thecaliskan/oort:latest' || '' }}
-            ${{ matrix.oort-version == '8.4' && 'registry.gitlab.com/thecaliskan/oort:latest' || '' }}
-            ${{ matrix.oort-version == '8.4' && 'quay.io/thecaliskan/oort:latest' || '' }}
+            ${{ matrix.oort-version == '8.5' && 'thecaliskan/oort:latest' || '' }}
+            ${{ matrix.oort-version == '8.5' && 'ghcr.io/thecaliskan/oort:latest' || '' }}
+            ${{ matrix.oort-version == '8.5' && 'registry.gitlab.com/thecaliskan/oort:latest' || '' }}
+            ${{ matrix.oort-version == '8.5' && 'quay.io/thecaliskan/oort:latest' || '' }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=local,dest=./output
 #          cache-from: type=gha,scope=oort-${{ matrix.oort-version }}
