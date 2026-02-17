@@ -92,7 +92,7 @@ jobs:
           build-args: |
             OORT_VERSION=${{ matrix.oort-version }}
             ALPINE_VERSION=${{ matrix.alpine-version }}
-            SWOOLE_VERSION=${{ matrix.swoole-version || 'swoole' }}
+            SWOOLE_VERSION=${{ matrix.swoole-version || '' }}
           tags: |
             thecaliskan/oort:${{ matrix.oort-version }}
             ghcr.io/thecaliskan/oort:${{ matrix.oort-version }}
