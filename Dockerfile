@@ -1,6 +1,6 @@
 ARG OORT_VERSION=8.5
 ARG ALPINE_VERSION=3.22
-ARG SWOOLE_VERSION
+ARG SWOOLE_VERSION=swoole
 FROM php:${OORT_VERSION}-alpine${ALPINE_VERSION}
 
 # Set Label
@@ -12,7 +12,7 @@ RUN set -eux; \
     apk upgrade --no-cache; \
     apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev brotli-dev icu-dev libzip-dev; \
     apk add --no-cache libstdc++ postgresql-libs icu-libs libzip;  \
-    pecl install igbinary redis swoole${SWOOLE_VERSION:-}; \
+    pecl install igbinary redis ${SWOOLE_VERSION}; \
     docker-php-ext-enable igbinary redis swoole; \
     docker-php-ext-install bcmath intl pcntl pdo_mysql pdo_pgsql zip; \
     apk del --no-network .build-deps; \
