@@ -134,7 +134,7 @@ jobs:
           path: ./output/**/sbom.spdx.json
 
       - name: Upload SARIF result
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: sarif.output.json
 
