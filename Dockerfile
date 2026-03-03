@@ -12,7 +12,7 @@ RUN set -eux; \
     apk update --no-cache; \
     apk upgrade --no-cache; \
     apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev brotli-dev icu-dev libzip-dev libssh2-dev; \
-    apk add --no-cache libstdc++ postgresql-libs icu-libs libzip;  \
+    apk add --no-cache libstdc++ postgresql-libs icu-libs libzip libssh2;  \
     pecl install igbinary redis swoole${SWOOLE_VERSION:-}; \
     docker-php-ext-enable igbinary redis swoole; \
     docker-php-ext-install bcmath intl pcntl pdo_mysql pdo_pgsql zip; \
