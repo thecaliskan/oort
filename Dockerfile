@@ -11,7 +11,7 @@ LABEL org.opencontainers.image.authors="Emre Çalışkan oort@thecaliskan.com"
 RUN set -eux; \
     apk update --no-cache; \
     apk upgrade --no-cache; \
-    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev brotli-dev icu-dev libzip-dev; \
+    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev brotli-dev icu-dev libzip-dev libssh2-dev; \
     apk add --no-cache libstdc++ postgresql-libs icu-libs libzip;  \
     pecl install igbinary redis swoole${SWOOLE_VERSION:-}; \
     docker-php-ext-enable igbinary redis swoole; \
