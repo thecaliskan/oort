@@ -10,8 +10,7 @@ The following versions of OORT are currently supported for security updates:
 | 8.4     | ✅ Actively Supported | 31 Dec 2028            |
 | 8.3     | ✅ Actively Supported | 31 Dec 2027            |
 | 8.2     | ✅ Actively Supported | 31 Dec 2026            |
-| 8.1     | ✅ Actively Supported | 31 Dec 2025            |
-| <= 8.0  | ❌ No longer supported | End of Life            |
+| <= 8.1  | ❌ No longer supported | End of Life            |
 
 ## Reporting a Vulnerability
 

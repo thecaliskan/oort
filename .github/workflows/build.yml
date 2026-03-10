@@ -19,8 +19,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - oort-version: 8.1
-            alpine-version: 3.22
           - oort-version: 8.2
             alpine-version: 3.22
           - oort-version: 8.3

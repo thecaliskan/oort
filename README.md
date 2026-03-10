@@ -20,11 +20,11 @@ This repository provides a lightweight and optimized Docker base image for runni
 - Pre-installed dependencies for a smooth setup 
 - Secure and production-ready
 - Multi-architecture support: linux/amd64, linux/arm64, linux/ppc64le, linux/s390x
-- Daily updates with the latest PHP minor versions (e.g., PHP 8.4.4 → 8.4.5)
+- Daily updates with the latest PHP minor versions (e.g., PHP 8.5.2 → 8.5.3)
 - Continuously updated system libraries to ensure security patches and new features are quickly integrated
 - Ultra-lightweight with a total image size of just <img src="https://img.shields.io/docker/image-size/thecaliskan/oort/latest?label=" height="16" alt="Image Size"> carefully optimized by removing all unnecessary files, making it a market leader in efficiency
 - Non-daemon based execution, ensuring the container only runs the specified command, minimizing resource consumption
-- Supports all PHP versions that receive security updates (8.1, 8.2, 8.3, and 8.4), not just actively developed versions
+- Supports all PHP versions that receive security updates (8.2, 8.3, 8.4 and 8.5), not just actively developed versions
 
 ## Documentation
 
