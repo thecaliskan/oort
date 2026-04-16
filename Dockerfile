@@ -13,7 +13,7 @@ RUN set -eux; \
     apk add --no-cache libstdc++ postgresql-libs icu-libs libzip libssh2;  \
     pecl install igbinary redis swoole; \
     docker-php-ext-enable igbinary redis swoole; \
-    docker-php-ext-install bcmath intl pcntl pdo_mysql pdo_pgsql zip; \
+    docker-php-ext-install bcmath ftp intl pcntl pdo_mysql pdo_pgsql zip; \
     apk del --no-network .build-deps; \
     rm -rf /tmp/pear /usr/local/lib/php/test /usr/local/lib/php/doc /usr/local/lib/php/.registry;
 
