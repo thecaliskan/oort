@@ -11,8 +11,8 @@ RUN set -eux; \
     apk upgrade --no-cache; \
     apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev brotli-dev icu-dev libzip-dev libssh2-dev; \
     apk add --no-cache libstdc++ postgresql-libs icu-libs libzip libssh2;  \
-    pecl install igbinary redis swoole; \
-    docker-php-ext-enable igbinary redis swoole; \
+    pecl install igbinary redis swoole ssh2; \
+    docker-php-ext-enable igbinary redis swoole ssh2; \
     docker-php-ext-install bcmath ftp intl pcntl pdo_mysql pdo_pgsql zip; \
     apk del --no-network .build-deps; \
     rm -rf /tmp/pear /usr/local/lib/php/test /usr/local/lib/php/doc /usr/local/lib/php/.registry;
