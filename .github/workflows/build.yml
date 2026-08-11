@@ -20,14 +20,18 @@ jobs:
       matrix:
         include:
           - oort-version: 8.2
-            alpine-version: 3.22
+            alpine-version: 3.24
           - oort-version: 8.3
-            alpine-version: 3.22
+            alpine-version: 3.24
           - oort-version: 8.4
-            alpine-version: 3.22
+            alpine-version: 3.24
           - oort-version: 8.5
-            alpine-version: 3.22
+            alpine-version: 3.24
+          - oort-version: 8.6-rc
+            alpine-version: 3.24
 
+    continue-on-error: ${{ matrix.oort-version == '8.6-rc' }}
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
