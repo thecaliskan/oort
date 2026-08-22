@@ -84,6 +84,10 @@ jobs:
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
+        env:
+          # GitLab Registry rejects BuildKit's default OCI artifact attestations (MANIFEST_BLOB_UNKNOWN).
+          # See: https://github.com/moby/buildkit/issues/7007
+          BUILDX_NO_DEFAULT_OCI_ARTIFACT: "true"
         with:
           file: ./Dockerfile
           push: true
