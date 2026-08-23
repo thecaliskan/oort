@@ -118,6 +118,9 @@ jobs:
           image: thecaliskan/oort:${{ matrix.oort-version }}
           sarif-file: sarif.output.json
           summary: true
+          github-token: ${{ secrets.OORT_GITHUB_TOKEN }}
+          dockerhub-user: thecaliskan
+          dockerhub-password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Run Docker Container and Extract PHP Extensions
         run: |
