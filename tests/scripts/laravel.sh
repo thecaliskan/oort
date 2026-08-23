@@ -20,6 +20,9 @@ ENV_FILE="${ROOT_DIR}/laravel/.env"
 
 echo "Running Laravel ${LARAVEL_VERSION} service tests with ${IMAGE} (PHP ${PHP_VERSION})"
 
+wait_for_postgres
+wait_for_redis
+
 debug "preparing database: php artisan migrate:fresh --force"
 docker run --rm \
   --network oort-test \

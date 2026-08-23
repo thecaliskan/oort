@@ -3,6 +3,12 @@ services:
     image: redis:alpine
     networks:
       - oort-test
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+      start_period: 2s
 
   postgres:
     image: postgres:16-alpine
@@ -12,6 +18,12 @@ services:
       POSTGRES_PASSWORD: secret
     networks:
       - oort-test
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d app -h 127.0.0.1"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
 
 networks:
   oort-test:

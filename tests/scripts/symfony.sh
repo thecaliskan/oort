@@ -20,6 +20,9 @@ ENV_FILE="${ROOT_DIR}/symfony/.env"
 
 echo "Running Symfony ${SYMFONY_VERSION} service tests with ${IMAGE} (PHP ${PHP_VERSION})"
 
+wait_for_postgres
+wait_for_redis
+
 debug "preparing database: php bin/console doctrine:schema:create --env=prod"
 docker run --rm \
   --network oort-test \

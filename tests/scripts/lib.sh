@@ -61,6 +61,46 @@ stop_dependencies() {
   docker compose -f "$COMPOSE_FILE" down -v
 }
 
+wait_for_postgres() {
+  local timeout="${1:-90}"
+  local i=0
+
+  debug "waiting for postgres on oort-test network (timeout ${timeout}s)"
+
+  while [ "$i" -lt "$timeout" ]; do
+    if docker run --rm --network oort-test postgres:16-alpine \
+      pg_isready -h postgres -U app -d app >/dev/null 2>&1; then
+      debug "postgres check passed"
+      return 0
+    fi
+    i=$((i + 1))
+    sleep 1
+  done
+
+  echo "Timed out waiting for postgres"
+  return 1
+}
+
+wait_for_redis() {
+  local timeout="${1:-60}"
+  local i=0
+
+  debug "waiting for redis on oort-test network (timeout ${timeout}s)"
+
+  while [ "$i" -lt "$timeout" ]; do
+    if docker run --rm --network oort-test redis:alpine \
+      redis-cli -h redis ping 2>/dev/null | grep -q PONG; then
+      debug "redis check passed"
+      return 0
+    fi
+    i=$((i + 1))
+    sleep 1
+  done
+
+  echo "Timed out waiting for redis"
+  return 1
+}
+
 run_http_test() {
   local label="$1"
   local image="$2"
