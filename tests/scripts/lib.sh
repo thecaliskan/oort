@@ -8,6 +8,14 @@ debug() {
   echo "[debug] $*"
 }
 
+docker_run() {
+  if [ -n "${DOCKER_PLATFORM:-}" ]; then
+    docker run --platform "$DOCKER_PLATFORM" "$@"
+  else
+    docker run "$@"
+  fi
+}
+
 wait_for_url() {
   local url="$1"
   local timeout="${2:-90}"
@@ -119,7 +127,7 @@ run_http_test() {
   debug "expect HTTP success at ${url}"
   remove_container "$container"
 
-  docker run -d \
+  docker_run -d \
     --name "$container" \
     --network oort-test \
     --env-file "$env_file" \
@@ -147,7 +155,7 @@ run_exec_test() {
   debug "check command=${check_command}"
   remove_container "$container"
 
-  docker run -d \
+  docker_run -d \
     --name "$container" \
     --network oort-test \
     --env-file "$env_file" \
@@ -176,7 +184,7 @@ run_worker_test() {
   debug "expect artisan process to be running"
   remove_container "$container"
 
-  docker run -d \
+  docker_run -d \
     --name "$container" \
     --network oort-test \
     --env-file "$env_file" \
@@ -215,13 +223,13 @@ run_laravel_queue_worker_test() {
   debug "expect worker process and processed job heartbeat"
   remove_container "$container"
 
-  docker run --rm \
+  docker_run --rm \
     --network oort-test \
     --env-file "$env_file" \
     "$image" \
     php artisan oort:dispatch-queue-heartbeat --clear --no-interaction
 
-  docker run -d \
+  docker_run -d \
     --name "$container" \
     --network oort-test \
     --env-file "$env_file" \
@@ -275,13 +283,13 @@ run_laravel_horizon_test() {
   debug "expect horizon running, horizon:status OK, and processed job heartbeat"
   remove_container "$container"
 
-  docker run --rm \
+  docker_run --rm \
     --network oort-test \
     --env-file "$env_file" \
     "$image" \
     php artisan oort:dispatch-queue-heartbeat --clear --no-interaction
 
-  docker run -d \
+  docker_run -d \
     --name "$container" \
     --network oort-test \
     --env-file "$env_file" \
@@ -338,13 +346,13 @@ run_laravel_pulse_test() {
   debug "expect pulse:work process and digested pulse_entries row"
   remove_container "$container"
 
-  docker run --rm \
+  docker_run --rm \
     --network oort-test \
     --env-file "$env_file" \
     "$image" \
     php artisan oort:record-pulse-heartbeat --clear --no-interaction
 
-  docker run -d \
+  docker_run -d \
     --name "$container" \
     --network oort-test \
     --env-file "$env_file" \
@@ -396,13 +404,13 @@ run_laravel_scheduler_test() {
   debug "expect schedule:work process and heartbeat after schedule:run"
   remove_container "$container"
 
-  docker run --rm \
+  docker_run --rm \
     --network oort-test \
     --env-file "$env_file" \
     "$image" \
     php artisan oort:heartbeat --clear --no-interaction
 
-  docker run -d \
+  docker_run -d \
     --name "$container" \
     --network oort-test \
     --env-file "$env_file" \
@@ -454,7 +462,7 @@ run_symfony_http_test() {
   debug "expect HTTP success at ${url}"
   remove_container "$container"
 
-  docker run -d \
+  docker_run -d \
     --name "$container" \
     --network oort-test \
     --env-file "$env_file" \
@@ -484,13 +492,13 @@ run_symfony_messenger_test() {
   debug "expect worker process and processed message heartbeat"
   remove_container "$container"
 
-  docker run --rm \
+  docker_run --rm \
     --network oort-test \
     --env-file "$env_file" \
     "$image" \
     php bin/console oort:dispatch-messenger-heartbeat --clear --no-interaction
 
-  docker run -d \
+  docker_run -d \
     --name "$container" \
     --network oort-test \
     --env-file "$env_file" \
@@ -545,13 +553,13 @@ run_symfony_scheduler_test() {
   debug "expect scheduler worker and heartbeat from periodic task"
   remove_container "$container"
 
-  docker run --rm \
+  docker_run --rm \
     --network oort-test \
     --env-file "$env_file" \
     "$image" \
     php bin/console oort:scheduler-heartbeat --clear --no-interaction
 
-  docker run -d \
+  docker_run -d \
     --name "$container" \
     --network oort-test \
     --env-file "$env_file" \
@@ -600,7 +608,7 @@ run_symfony_worker_test() {
   debug "expect bin/console process to be running"
   remove_container "$container"
 
-  docker run -d \
+  docker_run -d \
     --name "$container" \
     --network oort-test \
     --env-file "$env_file" \

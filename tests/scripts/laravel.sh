@@ -3,6 +3,7 @@ set -euo pipefail
 
 PHP_VERSION="${1:?OORT/PHP version tag required}"
 LARAVEL_VERSION="${2:-13}"
+DOCKER_PLATFORM="${3:-${DOCKER_PLATFORM:-}}"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # shellcheck source=lib.sh
@@ -19,12 +20,15 @@ IMAGE="$(laravel_image_tag "$PHP_VERSION" "$LARAVEL_VERSION")"
 ENV_FILE="${ROOT_DIR}/laravel/.env"
 
 echo "Running Laravel ${LARAVEL_VERSION} service tests with ${IMAGE} (PHP ${PHP_VERSION})"
+if [ -n "$DOCKER_PLATFORM" ]; then
+  echo "Platform: ${DOCKER_PLATFORM}"
+fi
 
 wait_for_postgres
 wait_for_redis
 
 debug "preparing database: php artisan migrate:fresh --force"
-docker run --rm \
+docker_run --rm \
   --network oort-test \
   --env-file "$ENV_FILE" \
   "$IMAGE" \

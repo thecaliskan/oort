@@ -22,6 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        platform: [linux/amd64, linux/arm64, linux/ppc64le, linux/s390x]
         include:
           # Laravel 12 — PHP ^8.2
           - oort-version: 8.2
@@ -49,10 +50,21 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v4
+        with:
+          platforms: linux/amd64,linux/arm64,linux/ppc64le,linux/s390x
+
       - uses: docker/setup-buildx-action@v4
 
+      - name: Platform slug
+        id: platform
+        run: echo "slug=${PLATFORM#linux/}" >> "$GITHUB_OUTPUT"
+        env:
+          PLATFORM: ${{ matrix.platform }}
+
       - name: Pull OORT image
-        run: docker pull thecaliskan/oort:${{ matrix.oort-version }}
+        run: docker pull --platform "${{ matrix.platform }}" thecaliskan/oort:${{ matrix.oort-version }}
 
       - name: Build Laravel test image
         uses: docker/build-push-action@v7
@@ -60,17 +72,20 @@ jobs:
           context: tests/laravel
           push: false
           load: true
-          tags: oort-test-laravel:${{ matrix.oort-version }}-${{ matrix.laravel-version }}
+          platforms: ${{ matrix.platform }}
+          tags: oort-test-laravel:${{ matrix.oort-version }}-${{ matrix.laravel-version }}-${{ steps.platform.outputs.slug }}
           build-args: |
             OORT_IMAGE=thecaliskan/oort:${{ matrix.oort-version }}
             LARAVEL_VERSION=${{ matrix.laravel-version }}.0
-          cache-from: type=gha,scope=laravel-${{ matrix.oort-version }}-${{ matrix.laravel-version }}
-          cache-to: type=gha,mode=max,scope=laravel-${{ matrix.oort-version }}-${{ matrix.laravel-version }}
+          cache-from: type=gha,scope=laravel-${{ matrix.oort-version }}-${{ matrix.laravel-version }}-${{ steps.platform.outputs.slug }}
+          cache-to: type=gha,mode=max,scope=laravel-${{ matrix.oort-version }}-${{ matrix.laravel-version }}-${{ steps.platform.outputs.slug }}
 
       - name: Start framework test dependencies
         run: docker compose -f tests/docker-compose.yml up -d --wait
 
       - name: Test Laravel services
+        env:
+          DOCKER_PLATFORM: ${{ matrix.platform }}
         run: bash tests/scripts/laravel.sh "${{ matrix.oort-version }}" "${{ matrix.laravel-version }}"
 
       - name: Stop framework test dependencies
@@ -88,6 +103,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        platform: [linux/amd64, linux/arm64, linux/ppc64le, linux/s390x]
         include:
           # Symfony 7.4 — PHP ^8.2
           - oort-version: 8.2
@@ -120,10 +136,21 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v4
+        with:
+          platforms: linux/amd64,linux/arm64,linux/ppc64le,linux/s390x
+
       - uses: docker/setup-buildx-action@v4
 
+      - name: Platform slug
+        id: platform
+        run: echo "slug=${PLATFORM#linux/}" >> "$GITHUB_OUTPUT"
+        env:
+          PLATFORM: ${{ matrix.platform }}
+
       - name: Pull OORT image
-        run: docker pull thecaliskan/oort:${{ matrix.oort-version }}
+        run: docker pull --platform "${{ matrix.platform }}" thecaliskan/oort:${{ matrix.oort-version }}
 
       - name: Build Symfony test image
         uses: docker/build-push-action@v7
@@ -131,17 +158,20 @@ jobs:
           context: tests/symfony
           push: false
           load: true
-          tags: oort-test-symfony:${{ matrix.oort-version }}-${{ matrix.symfony-version }}
+          platforms: ${{ matrix.platform }}
+          tags: oort-test-symfony:${{ matrix.oort-version }}-${{ matrix.symfony-version }}-${{ steps.platform.outputs.slug }}
           build-args: |
             OORT_IMAGE=thecaliskan/oort:${{ matrix.oort-version }}
             SYMFONY_VERSION=${{ matrix.symfony-version }}
-          cache-from: type=gha,scope=symfony-${{ matrix.oort-version }}-${{ matrix.symfony-version }}
-          cache-to: type=gha,mode=max,scope=symfony-${{ matrix.oort-version }}-${{ matrix.symfony-version }}
+          cache-from: type=gha,scope=symfony-${{ matrix.oort-version }}-${{ matrix.symfony-version }}-${{ steps.platform.outputs.slug }}
+          cache-to: type=gha,mode=max,scope=symfony-${{ matrix.oort-version }}-${{ matrix.symfony-version }}-${{ steps.platform.outputs.slug }}
 
       - name: Start framework test dependencies
         run: docker compose -f tests/docker-compose.yml up -d --wait
 
       - name: Test Symfony services
+        env:
+          DOCKER_PLATFORM: ${{ matrix.platform }}
         run: bash tests/scripts/symfony.sh "${{ matrix.oort-version }}" "${{ matrix.symfony-version }}"
 
       - name: Stop framework test dependencies

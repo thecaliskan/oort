@@ -4,10 +4,15 @@ set -euo pipefail
 FRAMEWORK="${1:?framework: laravel|symfony}"
 PHP_VERSION="${2:?OORT/PHP tag, e.g. 8.5}"
 FRAMEWORK_VERSION="${3:?framework version, e.g. 13 or 7.4}"
+PLATFORM="${4:-}"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # shellcheck source=matrix.sh
 source "${ROOT_DIR}/scripts/matrix.sh"
+
+if [ -n "$PLATFORM" ]; then
+  export DOCKER_PLATFORM="$PLATFORM"
+fi
 
 OORT_IMAGE="thecaliskan/oort:${PHP_VERSION}"
 
@@ -43,8 +48,19 @@ case "$FRAMEWORK" in
 esac
 
 echo "==> Building ${TAG}"
-if ! docker pull "$OORT_IMAGE"; then
+if [ -n "$PLATFORM" ]; then
+  echo "    platform: ${PLATFORM}"
+fi
+
+PULL_ARGS=()
+BUILD_PLATFORM_ARGS=()
+if [ -n "$PLATFORM" ]; then
+  PULL_ARGS=(--platform "$PLATFORM")
+  BUILD_PLATFORM_ARGS=(--platform "$PLATFORM")
+fi
+
+if ! docker pull "${PULL_ARGS[@]}" "$OORT_IMAGE"; then
   echo "SKIP: OORT image ${OORT_IMAGE} is not available"
   exit 2
 fi
-docker build -t "$TAG" "${BUILD_ARGS[@]}" "$CONTEXT"
+docker build "${BUILD_PLATFORM_ARGS[@]}" -t "$TAG" "${BUILD_ARGS[@]}" "$CONTEXT"

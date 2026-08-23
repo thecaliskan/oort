@@ -5,6 +5,12 @@ set -euo pipefail
 PHP_VERSIONS=(8.2 8.3 8.4 8.5 8.6-rc)
 LARAVEL_VERSIONS=(12 13)
 SYMFONY_VERSIONS=(7.4 8.0 8.1)
+OORT_PLATFORMS=(linux/amd64 linux/arm64 linux/ppc64le linux/s390x)
+
+platform_slug() {
+  local platform="${1#linux/}"
+  echo "$platform"
+}
 
 symfony_combo_supported() {
   local php="$1"
@@ -37,13 +43,21 @@ laravel_combo_supported() {
 laravel_image_tag() {
   local php="$1"
   local laravel="$2"
-  echo "oort-test-laravel:${php}-${laravel}"
+  local tag="oort-test-laravel:${php}-${laravel}"
+  if [ -n "${DOCKER_PLATFORM:-}" ]; then
+    tag="${tag}-$(platform_slug "$DOCKER_PLATFORM")"
+  fi
+  echo "$tag"
 }
 
 symfony_image_tag() {
   local php="$1"
   local symfony="$2"
-  echo "oort-test-symfony:${php}-${symfony}"
+  local tag="oort-test-symfony:${php}-${symfony}"
+  if [ -n "${DOCKER_PLATFORM:-}" ]; then
+    tag="${tag}-$(platform_slug "$DOCKER_PLATFORM")"
+  fi
+  echo "$tag"
 }
 
 laravel_matrix_json() {
