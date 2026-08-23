@@ -22,27 +22,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [linux/amd64, linux/arm64, linux/ppc64le, linux/s390x]
-        include:
-          # Laravel 12 — PHP ^8.2
+        platform:
+          - linux/amd64
+          - linux/arm64
+          - linux/ppc64le
+          - linux/s390x
+        oort-version:
+          - 8.2
+          - 8.3
+          - 8.4
+          - 8.5
+          - 8.6-rc
+        laravel-version:
+          - '12'
+          - '13'
+        exclude:
+          # Laravel 13 requires PHP 8.3+
           - oort-version: 8.2
-            laravel-version: '12'
-          - oort-version: 8.3
-            laravel-version: '12'
-          - oort-version: 8.4
-            laravel-version: '12'
-          - oort-version: 8.5
-            laravel-version: '12'
-          - oort-version: 8.6-rc
-            laravel-version: '12'
-          # Laravel 13 — PHP ^8.3
-          - oort-version: 8.3
-            laravel-version: '13'
-          - oort-version: 8.4
-            laravel-version: '13'
-          - oort-version: 8.5
-            laravel-version: '13'
-          - oort-version: 8.6-rc
             laravel-version: '13'
 
     continue-on-error: ${{ matrix.oort-version == '8.6-rc' }}
@@ -50,18 +46,18 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Set platform slug
+        id: platform
+        run: echo "slug=${PLATFORM#linux/}" >> "$GITHUB_OUTPUT"
+        env:
+          PLATFORM: ${{ matrix.platform }}
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
         with:
           platforms: linux/amd64,linux/arm64,linux/ppc64le,linux/s390x
 
       - uses: docker/setup-buildx-action@v4
-
-      - name: Platform slug
-        id: platform
-        run: echo "slug=${PLATFORM#linux/}" >> "$GITHUB_OUTPUT"
-        env:
-          PLATFORM: ${{ matrix.platform }}
 
       - name: Pull OORT image
         run: docker pull --platform "${{ matrix.platform }}" thecaliskan/oort:${{ matrix.oort-version }}
@@ -103,32 +99,30 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [linux/amd64, linux/arm64, linux/ppc64le, linux/s390x]
-        include:
-          # Symfony 7.4 — PHP ^8.2
+        platform:
+          - linux/amd64
+          - linux/arm64
+          - linux/ppc64le
+          - linux/s390x
+        oort-version:
+          - 8.2
+          - 8.3
+          - 8.4
+          - 8.5
+          - 8.6-rc
+        symfony-version:
+          - '7.4'
+          - '8.0'
+          - '8.1'
+        exclude:
+          # Symfony 8.0+ requires PHP 8.4+
           - oort-version: 8.2
-            symfony-version: '7.4'
+            symfony-version: '8.0'
+          - oort-version: 8.2
+            symfony-version: '8.1'
           - oort-version: 8.3
-            symfony-version: '7.4'
-          - oort-version: 8.4
-            symfony-version: '7.4'
-          - oort-version: 8.5
-            symfony-version: '7.4'
-          - oort-version: 8.6-rc
-            symfony-version: '7.4'
-          # Symfony 8.0 — PHP ^8.4
-          - oort-version: 8.4
             symfony-version: '8.0'
-          - oort-version: 8.5
-            symfony-version: '8.0'
-          - oort-version: 8.6-rc
-            symfony-version: '8.0'
-          # Symfony 8.1 — PHP ^8.4
-          - oort-version: 8.4
-            symfony-version: '8.1'
-          - oort-version: 8.5
-            symfony-version: '8.1'
-          - oort-version: 8.6-rc
+          - oort-version: 8.3
             symfony-version: '8.1'
 
     continue-on-error: ${{ matrix.oort-version == '8.6-rc' }}
@@ -136,18 +130,18 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Set platform slug
+        id: platform
+        run: echo "slug=${PLATFORM#linux/}" >> "$GITHUB_OUTPUT"
+        env:
+          PLATFORM: ${{ matrix.platform }}
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
         with:
           platforms: linux/amd64,linux/arm64,linux/ppc64le,linux/s390x
 
       - uses: docker/setup-buildx-action@v4
-
-      - name: Platform slug
-        id: platform
-        run: echo "slug=${PLATFORM#linux/}" >> "$GITHUB_OUTPUT"
-        env:
-          PLATFORM: ${{ matrix.platform }}
 
       - name: Pull OORT image
         run: docker pull --platform "${{ matrix.platform }}" thecaliskan/oort:${{ matrix.oort-version }}
