@@ -8,6 +8,34 @@ debug() {
   echo "[debug] $*"
 }
 
+dump_container_logs() {
+  local container="$1"
+
+  echo "===== container logs: ${container} ====="
+  if docker inspect "$container" &>/dev/null; then
+    docker logs "$container" 2>&1 || true
+  else
+    echo "(container ${container} not found)"
+  fi
+  echo "===== end container logs: ${container} ====="
+}
+
+dump_all_test_logs() {
+  local container
+
+  echo "===== remaining oort-test containers ====="
+  if containers=$(docker ps -aq --filter name=oort-test- 2>/dev/null) && [ -n "$containers" ]; then
+    for container in $containers; do
+      dump_container_logs "$container"
+    done
+  else
+    echo "(no oort-test-* containers found)"
+  fi
+
+  echo "===== docker compose service logs ====="
+  docker compose -f "$COMPOSE_FILE" logs --no-color 2>&1 || true
+}
+
 docker_run() {
   if [ -n "${DOCKER_PLATFORM:-}" ]; then
     docker run --platform "$DOCKER_PLATFORM" "$@"
@@ -33,6 +61,9 @@ wait_for_url() {
   done
 
   echo "Timed out waiting for ${url}"
+  if [ -n "${3:-}" ]; then
+    dump_container_logs "$3"
+  fi
   return 1
 }
 
@@ -53,6 +84,7 @@ wait_for_container() {
   done
 
   echo "Container ${name} did not start"
+  dump_container_logs "$name"
   return 1
 }
 
@@ -136,7 +168,7 @@ run_http_test() {
     $command
 
   wait_for_container "$container"
-  wait_for_url "$url"
+  wait_for_url "$url" 90 "$container" || return 1
   debug "${label}: all checks passed"
   remove_container "$container"
 }
@@ -166,7 +198,11 @@ run_exec_test() {
   debug "waiting 15s for ${label} to initialize"
   sleep 15
   debug "running check: ${check_command}"
-  docker exec "$container" $check_command
+  if ! docker exec "$container" $check_command; then
+    dump_container_logs "$container"
+    remove_container "$container"
+    return 1
+  fi
   debug "${label}: check command succeeded"
   remove_container "$container"
 }
@@ -198,7 +234,7 @@ run_worker_test() {
   if docker exec "$container" pgrep -f artisan >/dev/null 2>&1; then
     debug "process check passed: artisan worker is running in ${container}"
   else
-    docker logs "$container"
+    dump_container_logs "$container"
     echo "Worker process not running for ${label}"
     return 1
   fi
@@ -241,7 +277,7 @@ run_laravel_queue_worker_test() {
   sleep 5
 
   if ! docker exec "$container" pgrep -f artisan >/dev/null 2>&1; then
-    docker logs "$container"
+    dump_container_logs "$container"
     echo "Worker process not running for ${label}"
     return 1
   fi
@@ -262,7 +298,7 @@ run_laravel_queue_worker_test() {
     sleep 2
   done
 
-  docker logs "$container"
+  dump_container_logs "$container"
   echo "Queue heartbeat was not recorded for ${label}"
   remove_container "$container"
   return 1
@@ -301,7 +337,7 @@ run_laravel_horizon_test() {
   sleep 15
 
   if ! docker exec "$container" pgrep -f artisan >/dev/null 2>&1; then
-    docker logs "$container"
+    dump_container_logs "$container"
     echo "Horizon process not running for ${label}"
     return 1
   fi
@@ -325,7 +361,7 @@ run_laravel_horizon_test() {
     sleep 2
   done
 
-  docker logs "$container"
+  dump_container_logs "$container"
   echo "Horizon did not process queue heartbeat for ${label}"
   remove_container "$container"
   return 1
@@ -364,7 +400,7 @@ run_laravel_pulse_test() {
   sleep 5
 
   if ! docker exec "$container" pgrep -f "artisan pulse:work" >/dev/null 2>&1; then
-    docker logs "$container"
+    dump_container_logs "$container"
     echo "Pulse worker process not running for ${label}"
     return 1
   fi
@@ -385,7 +421,7 @@ run_laravel_pulse_test() {
     sleep 2
   done
 
-  docker logs "$container"
+  dump_container_logs "$container"
   echo "Pulse heartbeat was not digested for ${label}"
   remove_container "$container"
   return 1
@@ -422,7 +458,7 @@ run_laravel_scheduler_test() {
   sleep 3
 
   if ! docker exec "$container" pgrep -f "artisan schedule:work" >/dev/null 2>&1; then
-    docker logs "$container"
+    dump_container_logs "$container"
     echo "Scheduler process not running for ${label}"
     return 1
   fi
@@ -438,7 +474,7 @@ run_laravel_scheduler_test() {
     return 0
   fi
 
-  docker logs "$container"
+  dump_container_logs "$container"
   echo "Scheduler heartbeat was not recorded for ${label}"
   remove_container "$container"
   return 1
@@ -471,7 +507,7 @@ run_symfony_http_test() {
     $command
 
   wait_for_container "$container"
-  wait_for_url "$url"
+  wait_for_url "$url" 90 "$container" || return 1
   debug "${label}: all checks passed"
   remove_container "$container"
 }
@@ -510,7 +546,7 @@ run_symfony_messenger_test() {
   sleep 5
 
   if ! docker exec "$container" pgrep -f "bin/console" >/dev/null 2>&1; then
-    docker logs "$container"
+    dump_container_logs "$container"
     echo "Messenger worker process not running for ${label}"
     return 1
   fi
@@ -531,7 +567,7 @@ run_symfony_messenger_test() {
     sleep 2
   done
 
-  docker logs "$container"
+  dump_container_logs "$container"
   echo "Messenger heartbeat was not recorded for ${label}"
   remove_container "$container"
   return 1
@@ -571,7 +607,7 @@ run_symfony_scheduler_test() {
   sleep 5
 
   if ! docker exec "$container" pgrep -f "bin/console" >/dev/null 2>&1; then
-    docker logs "$container"
+    dump_container_logs "$container"
     echo "Scheduler worker process not running for ${label}"
     return 1
   fi
@@ -589,7 +625,7 @@ run_symfony_scheduler_test() {
     sleep 2
   done
 
-  docker logs "$container"
+  dump_container_logs "$container"
   echo "Scheduler heartbeat was not recorded for ${label}"
   remove_container "$container"
   return 1
@@ -622,7 +658,7 @@ run_symfony_worker_test() {
   if docker exec "$container" pgrep -f "bin/console" >/dev/null 2>&1; then
     debug "process check passed: bin/console worker is running in ${container}"
   else
-    docker logs "$container"
+    dump_container_logs "$container"
     echo "Worker process not running for ${label}"
     return 1
   fi

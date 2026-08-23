@@ -84,6 +84,10 @@ jobs:
           DOCKER_PLATFORM: ${{ matrix.platform }}
         run: bash tests/scripts/laravel.sh "${{ matrix.oort-version }}" "${{ matrix.laravel-version }}"
 
+      - name: Dump container logs on failure
+        if: failure()
+        run: bash -c 'source tests/scripts/lib.sh && dump_all_test_logs'
+
       - name: Stop framework test dependencies
         if: always()
         run: docker compose -f tests/docker-compose.yml down -v
@@ -167,6 +171,10 @@ jobs:
         env:
           DOCKER_PLATFORM: ${{ matrix.platform }}
         run: bash tests/scripts/symfony.sh "${{ matrix.oort-version }}" "${{ matrix.symfony-version }}"
+
+      - name: Dump container logs on failure
+        if: failure()
+        run: bash -c 'source tests/scripts/lib.sh && dump_all_test_logs'
 
       - name: Stop framework test dependencies
         if: always()

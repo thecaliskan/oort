@@ -11,6 +11,8 @@ source "${ROOT_DIR}/scripts/lib.sh"
 # shellcheck source=matrix.sh
 source "${ROOT_DIR}/scripts/matrix.sh"
 
+trap 'test $? -eq 0 || dump_all_test_logs' EXIT
+
 if ! laravel_combo_supported "$PHP_VERSION" "$LARAVEL_VERSION"; then
   echo "Skipping Laravel ${LARAVEL_VERSION} on PHP ${PHP_VERSION} (incompatible)"
   exit 0
