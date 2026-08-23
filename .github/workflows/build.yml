@@ -122,17 +122,29 @@ jobs:
           dockerhub-user: thecaliskan
           dockerhub-password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Run Docker Container and Extract PHP Extensions
+      - name: Verify PHP extensions on all platforms
         run: |
-          docker run --rm thecaliskan/oort:${{ matrix.oort-version }} \
-          php -r 'echo json_encode(array_map(fn($ext) => ["name" => $ext, "version" => phpversion($ext) ?: "Unknown"], get_loaded_extensions()), JSON_PRETTY_PRINT);' \
-          > php-extensions-${{ matrix.oort-version }}.json
+          image="thecaliskan/oort:${{ matrix.oort-version }}"
+          for platform in linux/amd64 linux/arm64 linux/ppc64le linux/s390x; do
+            docker pull --platform "$platform" "$image"
+            bash tests/scripts/verify-php-extensions.sh "$image" "$platform"
+          done
+
+      - name: Extract PHP extensions manifest
+        run: |
+          image="thecaliskan/oort:${{ matrix.oort-version }}"
+          for platform in linux/amd64 linux/arm64 linux/ppc64le linux/s390x; do
+            slug="${platform#linux/}"
+            docker run --rm --platform "$platform" "$image" \
+              php -r 'echo json_encode(array_map(fn($ext) => ["name" => $ext, "version" => phpversion($ext) ?: "Unknown"], get_loaded_extensions()), JSON_PRETTY_PRINT);' \
+              > "php-extensions-${{ matrix.oort-version }}-${slug}.json"
+          done
 
       - name: Upload PHP Extensions as Artifact
         uses: actions/upload-artifact@v7
         with:
           name: php-extensions-${{ matrix.oort-version }}
-          path: php-extensions-${{ matrix.oort-version }}.json
+          path: php-extensions-${{ matrix.oort-version }}-*.json
 
       - name: Upload SBOM as Artifact
         uses: actions/upload-artifact@v7

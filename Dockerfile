@@ -9,9 +9,9 @@ LABEL org.opencontainers.image.authors="Emre Çalışkan oort@thecaliskan.com"
 RUN set -eux; \
     apk update --no-cache; \
     apk upgrade --no-cache; \
-    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev brotli-dev icu-dev libzip-dev libssh2-dev; \
-    apk add --no-cache libstdc++ postgresql-libs icu-libs libzip libssh2;  \
-    pecl install igbinary redis swoole ssh2; \
+    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev brotli-dev icu-dev libzip-dev libssh2-dev libucontext-dev; \
+    apk add --no-cache libstdc++ postgresql-libs icu-libs libzip libssh2 libucontext; \
+    LDFLAGS="-lucontext" pecl install igbinary redis swoole ssh2; \
     docker-php-ext-enable igbinary redis swoole ssh2; \
     docker-php-ext-install bcmath ftp intl pcntl pdo_mysql pdo_pgsql zip; \
     apk del --no-network .build-deps; \
