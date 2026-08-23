@@ -9,29 +9,13 @@ on:
   schedule:
     - cron: '0 3 * * *'
   workflow_dispatch:
-    inputs:
-      oort-version:
-        description: OORT image tag (leave empty for full matrix)
-        required: false
-        type: string
-      laravel-version:
-        description: Laravel major version (12 or 13, leave empty for both)
-        required: false
-        type: string
-      symfony-version:
-        description: Symfony version (7.4, 8.0, or 8.1, leave empty for all)
-        required: false
-        type: string
 
 jobs:
   laravel-tests:
-    if: >
-      (github.event_name == 'workflow_dispatch' ||
-       github.event_name == 'schedule' ||
-       github.event.workflow_run.conclusion == 'success') &&
-      (github.event_name != 'workflow_dispatch' ||
-       (github.event.inputs.oort-version == '' || github.event.inputs.oort-version == matrix.oort-version) &&
-       (github.event.inputs.laravel-version == '' || github.event.inputs.laravel-version == matrix.laravel-version))
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -94,13 +78,10 @@ jobs:
         run: docker compose -f tests/docker-compose.yml down -v
 
   symfony-tests:
-    if: >
-      (github.event_name == 'workflow_dispatch' ||
-       github.event_name == 'schedule' ||
-       github.event.workflow_run.conclusion == 'success') &&
-      (github.event_name != 'workflow_dispatch' ||
-       (github.event.inputs.oort-version == '' || github.event.inputs.oort-version == matrix.oort-version) &&
-       (github.event.inputs.symfony-version == '' || github.event.inputs.symfony-version == matrix.symfony-version))
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     permissions:
       contents: read
