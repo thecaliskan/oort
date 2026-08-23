@@ -1,0 +1,168 @@
+name: Framework Tests
+
+on:
+  workflow_run:
+    workflows:
+      - Docker Build
+    types:
+      - completed
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      oort-version:
+        description: OORT image tag (leave empty for full matrix)
+        required: false
+        type: string
+      laravel-version:
+        description: Laravel major version (12 or 13, leave empty for both)
+        required: false
+        type: string
+      symfony-version:
+        description: Symfony version (7.4, 8.0, or 8.1, leave empty for all)
+        required: false
+        type: string
+
+jobs:
+  laravel-tests:
+    if: >
+      (github.event_name == 'workflow_dispatch' ||
+       github.event_name == 'schedule' ||
+       github.event.workflow_run.conclusion == 'success') &&
+      (github.event_name != 'workflow_dispatch' ||
+       (github.event.inputs.oort-version == '' || github.event.inputs.oort-version == matrix.oort-version) &&
+       (github.event.inputs.laravel-version == '' || github.event.inputs.laravel-version == matrix.laravel-version))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Laravel 12 — PHP ^8.2
+          - oort-version: 8.2
+            laravel-version: '12'
+          - oort-version: 8.3
+            laravel-version: '12'
+          - oort-version: 8.4
+            laravel-version: '12'
+          - oort-version: 8.5
+            laravel-version: '12'
+          - oort-version: 8.6-rc
+            laravel-version: '12'
+          # Laravel 13 — PHP ^8.3
+          - oort-version: 8.3
+            laravel-version: '13'
+          - oort-version: 8.4
+            laravel-version: '13'
+          - oort-version: 8.5
+            laravel-version: '13'
+          - oort-version: 8.6-rc
+            laravel-version: '13'
+
+    continue-on-error: ${{ matrix.oort-version == '8.6-rc' }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Pull OORT image
+        run: docker pull thecaliskan/oort:${{ matrix.oort-version }}
+
+      - name: Build Laravel test image
+        uses: docker/build-push-action@v7
+        with:
+          context: tests/laravel
+          push: false
+          load: true
+          tags: oort-test-laravel:${{ matrix.oort-version }}-${{ matrix.laravel-version }}
+          build-args: |
+            OORT_IMAGE=thecaliskan/oort:${{ matrix.oort-version }}
+            LARAVEL_VERSION=${{ matrix.laravel-version }}.0
+          cache-from: type=gha,scope=laravel-${{ matrix.oort-version }}-${{ matrix.laravel-version }}
+          cache-to: type=gha,mode=max,scope=laravel-${{ matrix.oort-version }}-${{ matrix.laravel-version }}
+
+      - name: Start framework test dependencies
+        run: docker compose -f tests/docker-compose.yml up -d --wait
+
+      - name: Test Laravel services
+        run: bash tests/scripts/laravel.sh "${{ matrix.oort-version }}" "${{ matrix.laravel-version }}"
+
+      - name: Stop framework test dependencies
+        if: always()
+        run: docker compose -f tests/docker-compose.yml down -v
+
+  symfony-tests:
+    if: >
+      (github.event_name == 'workflow_dispatch' ||
+       github.event_name == 'schedule' ||
+       github.event.workflow_run.conclusion == 'success') &&
+      (github.event_name != 'workflow_dispatch' ||
+       (github.event.inputs.oort-version == '' || github.event.inputs.oort-version == matrix.oort-version) &&
+       (github.event.inputs.symfony-version == '' || github.event.inputs.symfony-version == matrix.symfony-version))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Symfony 7.4 — PHP ^8.2
+          - oort-version: 8.2
+            symfony-version: '7.4'
+          - oort-version: 8.3
+            symfony-version: '7.4'
+          - oort-version: 8.4
+            symfony-version: '7.4'
+          - oort-version: 8.5
+            symfony-version: '7.4'
+          - oort-version: 8.6-rc
+            symfony-version: '7.4'
+          # Symfony 8.0 — PHP ^8.4
+          - oort-version: 8.4
+            symfony-version: '8.0'
+          - oort-version: 8.5
+            symfony-version: '8.0'
+          - oort-version: 8.6-rc
+            symfony-version: '8.0'
+          # Symfony 8.1 — PHP ^8.4
+          - oort-version: 8.4
+            symfony-version: '8.1'
+          - oort-version: 8.5
+            symfony-version: '8.1'
+          - oort-version: 8.6-rc
+            symfony-version: '8.1'
+
+    continue-on-error: ${{ matrix.oort-version == '8.6-rc' }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Pull OORT image
+        run: docker pull thecaliskan/oort:${{ matrix.oort-version }}
+
+      - name: Build Symfony test image
+        uses: docker/build-push-action@v7
+        with:
+          context: tests/symfony
+          push: false
+          load: true
+          tags: oort-test-symfony:${{ matrix.oort-version }}-${{ matrix.symfony-version }}
+          build-args: |
+            OORT_IMAGE=thecaliskan/oort:${{ matrix.oort-version }}
+            SYMFONY_VERSION=${{ matrix.symfony-version }}
+          cache-from: type=gha,scope=symfony-${{ matrix.oort-version }}-${{ matrix.symfony-version }}
+          cache-to: type=gha,mode=max,scope=symfony-${{ matrix.oort-version }}-${{ matrix.symfony-version }}
+
+      - name: Start framework test dependencies
+        run: docker compose -f tests/docker-compose.yml up -d --wait
+
+      - name: Test Symfony services
+        run: bash tests/scripts/symfony.sh "${{ matrix.oort-version }}" "${{ matrix.symfony-version }}"
+
+      - name: Stop framework test dependencies
+        if: always()
+        run: docker compose -f tests/docker-compose.yml down -v
