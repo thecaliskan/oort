@@ -10,7 +10,7 @@ This repository provides a lightweight and optimized Docker base image for runni
 [![Docker Stars](https://img.shields.io/docker/stars/thecaliskan/oort)](https://hub.docker.com/r/thecaliskan/oort)
 [![Docker Version](https://img.shields.io/docker/v/thecaliskan/oort/latest)](https://hub.docker.com/r/thecaliskan/oort)
 [![License](https://img.shields.io/github/license/thecaliskan/oort)](https://github.com/thecaliskan/oort/blob/master/LICENSE)
-[![Platforms](https://img.shields.io/badge/platforms-linux%2Famd64%20%7C%20linux%2Farm64%20%7C%20linux%2Fppc64le%20%7C%20linux%2Fs390x%20%7C%20macos%2Famd64%20%7C%20macos%2Farm64-blue)](https://hub.docker.com/r/thecaliskan/oort)
+[![Platforms](https://img.shields.io/badge/platforms-linux%2Famd64%20%7C%20linux%2Farm64%20%7C%20linux%2Fppc64le%20%7C%20linux%2Fs390x%20%7C%20linux%2Friscv64%20%7C%20macos%2Famd64%20%7C%20macos%2Farm64-blue)](https://hub.docker.com/r/thecaliskan/oort)
 
 ### Features
 
@@ -19,7 +19,7 @@ This repository provides a lightweight and optimized Docker base image for runni
 - Supports Symfony Runner, Symfony Messenger, and Symfony Scheduler
 - Pre-installed dependencies for a smooth setup 
 - Secure and production-ready
-- Multi-architecture support: linux/amd64, linux/arm64, linux/ppc64le, linux/s390x
+- Multi-architecture support: linux/amd64, linux/arm64, linux/ppc64le, linux/s390x, linux/riscv64
 - Daily updates with the latest PHP minor versions (e.g., PHP 8.5.2 → 8.5.3)
 - Continuously updated system libraries to ensure security patches and new features are quickly integrated
 - Ultra-lightweight with a total image size of just <img src="https://img.shields.io/docker/image-size/thecaliskan/oort/latest?label=" height="16" alt="Image Size"> carefully optimized by removing all unnecessary files, making it a market leader in efficiency
