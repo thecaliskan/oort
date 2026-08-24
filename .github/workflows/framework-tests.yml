@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 env:
-  OORT_PLATFORMS_JSON: '["linux/amd64","linux/arm64","linux/ppc64le","linux/s390x","linux/riscv64"]'
+  OORT_PLATFORMS: linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/riscv64
 
 jobs:
   laravel-tests:
@@ -25,7 +25,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ${{ fromJson(env.OORT_PLATFORMS_JSON) }}
+        platform:
+          - linux/amd64
+          - linux/arm64
+          - linux/ppc64le
+          - linux/s390x
+          - linux/riscv64
         oort-version:
           - 8.2
           - 8.3
@@ -54,7 +59,7 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
         with:
-          platforms: ${{ join(fromJson(env.OORT_PLATFORMS_JSON), ',') }}
+          platforms: ${{ env.OORT_PLATFORMS }}
 
       - uses: docker/setup-buildx-action@v4
 
@@ -102,7 +107,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ${{ fromJson(env.OORT_PLATFORMS_JSON) }}
+        platform:
+          - linux/amd64
+          - linux/arm64
+          - linux/ppc64le
+          - linux/s390x
+          - linux/riscv64
         oort-version:
           - 8.2
           - 8.3
@@ -138,7 +148,7 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
         with:
-          platforms: ${{ join(fromJson(env.OORT_PLATFORMS_JSON), ',') }}
+          platforms: ${{ env.OORT_PLATFORMS }}
 
       - uses: docker/setup-buildx-action@v4
 

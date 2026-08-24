@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  OORT_PLATFORMS_JSON: '["linux/amd64","linux/arm64","linux/ppc64le","linux/s390x","linux/riscv64"]'
+  OORT_PLATFORMS: linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,linux/riscv64
 
 jobs:
   build:
@@ -42,7 +42,7 @@ jobs:
       - name: Set up QEMU (Emulation for ARM & Other Architectures)
         uses: docker/setup-qemu-action@v4
         with:
-          platforms: ${{ join(fromJson(env.OORT_PLATFORMS_JSON), ',') }}
+          platforms: ${{ env.OORT_PLATFORMS }}
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v4
@@ -96,7 +96,7 @@ jobs:
           push: true
           provenance: mode=max
           sbom: true
-          platforms: ${{ join(fromJson(env.OORT_PLATFORMS_JSON), ',') }}
+          platforms: ${{ env.OORT_PLATFORMS }}
           build-args: |
             OORT_VERSION=${{ matrix.oort-version }}
             ALPINE_VERSION=${{ matrix.alpine-version }}
@@ -128,7 +128,8 @@ jobs:
       - name: Verify PHP extensions on all platforms
         run: |
           image="thecaliskan/oort:${{ matrix.oort-version }}"
-          for platform in ${{ join(fromJson(env.OORT_PLATFORMS_JSON), ' ') }}; do
+          IFS=',' read -ra platforms <<< "${{ env.OORT_PLATFORMS }}"
+          for platform in "${platforms[@]}"; do
             docker pull --platform "$platform" "$image"
             bash tests/scripts/verify-php-extensions.sh "$image" "$platform"
           done
@@ -136,7 +137,8 @@ jobs:
       - name: Extract PHP extensions manifest
         run: |
           image="thecaliskan/oort:${{ matrix.oort-version }}"
-          for platform in ${{ join(fromJson(env.OORT_PLATFORMS_JSON), ' ') }}; do
+          IFS=',' read -ra platforms <<< "${{ env.OORT_PLATFORMS }}"
+          for platform in "${platforms[@]}"; do
             slug="${platform#linux/}"
             docker run --rm --platform "$platform" "$image" \
               php -r 'echo json_encode(array_map(fn($ext) => ["name" => $ext, "version" => phpversion($ext) ?: "Unknown"], get_loaded_extensions()), JSON_PRETTY_PRINT);' \
