@@ -11,15 +11,11 @@ RUN set -eux; \
     apk upgrade --no-cache; \
     apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev brotli-dev icu-dev libzip-dev libssh2-dev libucontext-dev; \
     apk add --no-cache libstdc++ postgresql-libs icu-libs libzip libssh2 libucontext; \
-    apk add --no-cache --virtual .pie-deps curl git unzip; \
-    curl -fsSL -o /usr/local/bin/pie https://github.com/php/pie/releases/download/1.5.0-rc.1/pie.phar; \
-    chmod +x /usr/local/bin/pie; \
-    git clone --quiet --depth 1 --branch 1.5.0 https://github.com/php/pecl-networking-ssh2.git /tmp/ssh2; \
-    pie repository:add path /tmp/ssh2; \
-    LDFLAGS="-lucontext" pie install --force igbinary/igbinary:^3.2.17RC1 phpredis/phpredis:^6.3 swoole/swoole:^6.2 php/pecl-networking-ssh2:1.5.0; \
+    LDFLAGS="-lucontext" pecl install igbinary redis swoole ssh2; \
+    docker-php-ext-enable igbinary redis swoole ssh2; \
     docker-php-ext-install bcmath ftp intl pcntl pdo_mysql pdo_pgsql zip; \
-    apk del --no-network .pie-deps .build-deps; \
-    rm -rf /tmp/ssh2 /tmp/pear /root/.pie /usr/local/bin/pie /usr/local/lib/php/test /usr/local/lib/php/doc /usr/local/lib/php/.registry;
+    apk del --no-network .build-deps; \
+    rm -rf /tmp/pear /usr/local/lib/php/test /usr/local/lib/php/doc /usr/local/lib/php/.registry;
 
 # Install composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
