@@ -25,7 +25,7 @@ while [ "$#" -gt 0 ]; do
     --symfony) FILTER_SYMFONY="${2:?}"; shift ;;
     --platform) FILTER_PLATFORM="${2:?}"; shift ;;
     -h|--help)
-      echo "Usage: $0 [--laravel-only|--symfony-only] [--all-platforms] [--php 8.5] [--laravel 13] [--symfony 8.1] [--platform linux/amd64]"
+      echo "Usage: $0 [--laravel-only|--symfony-only] [--all-platforms] [--php 8.5] [--laravel 13] [--symfony 8.1] [--platform linux/arm64]"
       exit 0
       ;;
     *)

@@ -5,7 +5,7 @@ set -euo pipefail
 PHP_VERSIONS=(8.2 8.3 8.4 8.5 8.6-rc)
 LARAVEL_VERSIONS=(12 13)
 SYMFONY_VERSIONS=(7.4 8.0 8.1)
-OORT_PLATFORMS=(linux/amd64 linux/arm64 linux/ppc64le linux/s390x linux/riscv64)
+OORT_PLATFORMS=(linux/amd64 linux/arm64 linux/ppc64le linux/s390x)
 
 platform_slug() {
   local platform="${1#linux/}"
