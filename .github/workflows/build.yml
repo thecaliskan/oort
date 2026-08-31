@@ -43,7 +43,7 @@ jobs:
         uses: docker/setup-qemu-action@v4
         with:
           platforms: ${{ env.OORT_PLATFORMS }}
-          image: tonistiigi/binfmt:qemu-v9.2.2-52
+          image: tonistiigi/binfmt:latest
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v4
