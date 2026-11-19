@@ -6,13 +6,12 @@ FROM php:${OORT_VERSION}-alpine${ALPINE_VERSION}
 LABEL org.opencontainers.image.authors="Emre Çalışkan oort@thecaliskan.com"
 
 # Install PHP extensions
-RUN --mount=type=bind,from=ghcr.io/php/pie:bin,source=/pie,target=/usr/local/bin/pie \
-    set -eux; \
+RUN set -eux; \
     apk update --no-cache; \
     apk upgrade --no-cache; \
     apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev brotli-dev icu-dev libzip-dev libssh2-dev libucontext-dev; \
     apk add --no-cache libstdc++ postgresql-libs icu-libs libzip libssh2 libucontext; \
-    LDFLAGS="-lucontext" pie install --no-cache "igbinary/igbinary:^3.2@RC" phpredis/phpredis pecl/ssh2 swoole/swoole; \
+    LDFLAGS="-lucontext" pecl install igbinary redis swoole ssh2; \
     docker-php-ext-enable igbinary redis swoole ssh2; \
     docker-php-ext-install bcmath ftp intl pcntl pdo_mysql pdo_pgsql zip; \
     apk del --no-network .build-deps; \
